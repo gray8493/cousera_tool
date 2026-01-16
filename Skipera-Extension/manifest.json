@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "Coursera SP",
+    "version": "1.0",
+    "description": "Coursera SP - Công cụ tự động hóa Coursera (Video, Reading, Quiz).",
+    "permissions": [
+        "storage",
+        "sidePanel",
+        "declarativeNetRequest",
+        "cookies"
+    ],
+    "host_permissions": [
+        "*://*.coursera.org/*",
+        "https://generativelanguage.googleapis.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "side_panel": {
+        "default_path": "sidepanel.html"
+    },
+    "action": {
+        "default_title": "Open Coursera SP Panel"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.coursera.org/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,352 @@
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --accent: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-main);
+    width: 350px;
+    height: 600px;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.logo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+nav {
+    display: flex;
+    background: var(--card-bg);
+    padding: 4px;
+    border-radius: 8px;
+    gap: 4px;
+}
+
+.nav-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+}
+
+h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.input-group {
+    margin-bottom: 12px;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.primary-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+.secondary-btn {
+    width: 100%;
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.status-box {
+    background: var(--bg-dark);
+    padding: 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+    min-height: 80px;
+    color: var(--accent);
+    overflow-y: auto;
+}
+
+.progress-container {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.premium-card {
+    position: relative;
+    border: 1px solid #fbbf24;
+    background: linear-gradient(145deg, #1e293b, #1e1b4b);
+}
+
+.premium-badge {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    background: #fbbf24;
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.price-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    margin: 15px 0;
+}
+
+.price-item {
+    text-align: center;
+}
+
+.price-divider {
+    width: 1px;
+    height: 30px;
+    background: var(--border);
+}
+
+.price-box .amount {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.qr-container {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.qr-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.qr-info {
+    color: #1e293b;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.paypal-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #ffc439;
+    color: #000;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.contact-box {
+    margin-top: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.contact-link {
+    display: block;
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+}
+
+.premium-btn {
+    width: 100%;
+    background: #fbbf24;
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.hint-text {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.lang-btn {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.lang-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.ai-warning-box {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: center;
+    font-weight: 500;
+}
+
+footer {
+    text-align: center;
+    padding: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+}

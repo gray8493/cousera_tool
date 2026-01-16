@@ -1,0 +1,18 @@
+# Danh sách các tệp TUYỆT ĐỐI KHÔNG đưa lên GitHub
+license_keys.txt
+generate_keys.py
+create_keys_js.py
+main/
+BACKUP_PROTECTED/
+Skipera-Extension/Source-Backup/
+# skipera-main/
+*.log
+*.txt
+!Skipera-Extension/manifest.json
+!Skipera-Extension/keys.js
+
+# Các tệp rác của hệ thống
+node_modules/
+.DS_Store
+Thumbs.db
+*.log

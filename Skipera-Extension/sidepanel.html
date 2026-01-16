@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coursera SP Control Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="container">
+        <header>
+            <div class="logo-row">
+                <div class="logo">
+                    <span class="logo-icon">🚀</span>
+                    <h1>Coursera SP</h1>
+                </div>
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="vi">VI</button>
+                </div>
+            </div>
+            <nav>
+                <button class="nav-btn active" data-tab="automation" data-i18n="nav_auto">Auto</button>
+                <button class="nav-btn" data-tab="settings" data-i18n="nav_config">Config</button>
+                <button class="nav-btn" data-tab="payment" data-i18n="nav_pro">Pro</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Automation Tab -->
+            <section id="automation" class="tab-content active">
+                <div class="card">
+                    <h3 data-i18n="course_control">Course Control</h3>
+                    <div class="input-group">
+                        <label for="course-slug" data-i18n="course_slug_label">Course Slug/URL</label>
+                        <input type="text" id="course-slug"
+                            placeholder="e.g. google-ux-design-professional-certificate">
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="skip-video" checked>
+                            <span data-i18n="watch_videos">Watch Videos (PRO)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="solve-quiz" checked>
+                            <span data-i18n="solve_quizzes">Solve Quizzes (AI solve maybe fail) (PRO)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="read-supplement" checked>
+                            <span data-i18n="read_supplements">Read Supplements (PRO)</span>
+                        </label>
+                    </div>
+                    <button id="start-btn" class="primary-btn" data-i18n="start_automation_btn">Start
+                        Automation</button>
+                    <div class="ai-warning-box" data-i18n="ai_warning">⚠️ Lưu ý: Các đáp án do AI tạo ra có thể sai. Vui lòng kiểm tra lại nếu cần thiết.</div>
+                </div>
+
+                <div class="card status-card">
+                    <h3 data-i18n="status_title">Status</h3>
+                    <div id="status-display" class="status-box" data-i18n="status_ready">Ready to start...</div>
+                    <div id="progress-bar" class="progress-container">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings" class="tab-content">
+                <div class="card">
+                    <h3 data-i18n="credentials_title">Credentials</h3>
+                    <p class="hint-text" data-i18n="cookies_hint">Cookies are auto-detected when you visit Coursera.
+                        Click "Config" tab to refresh.</p>
+                    <div class="input-group">
+                        <label for="gemini-key" data-i18n="gemini_key_label">Gemini API Key</label>
+                        <input type="password" id="gemini-key" placeholder="Enter your Gemini API key">
+                    </div>
+                    <div class="input-group">
+                        <label for="cauth-token" data-i18n="cauth_label">CAUTH Token</label>
+                        <input type="password" id="cauth-token" placeholder="Optional: manual entry">
+                    </div>
+                    <div class="input-group">
+                        <label for="csrf-token" data-i18n="csrf_label">CSRF3 Token</label>
+                        <input type="password" id="csrf-token" placeholder="Optional: manual entry">
+                    </div>
+                    <button id="save-settings" class="secondary-btn" data-i18n="save_settings_btn">Save
+                        Settings</button>
+                    <button id="refresh-cookies" class="primary-btn" data-i18n="refresh_cookies_btn">🔄 Refresh
+                        Cookies</button>
+                </div>
+            </section>
+
+            <!-- Payment Tab -->
+            <section id="payment" class="tab-content">
+                <div class="card premium-card">
+                    <div class="premium-badge" data-i18n="pro_version_badge">PRO VERSION</div>
+                    <h3 data-i18n="activate_pro_title">Kích hoạt tính năng PRO</h3>
+                    <p data-i18n="activate_pro_desc">Mở khóa tính năng giải Quiz bằng AI và hỗ trợ Peer Assignment.</p>
+
+                    <div class="price-box">
+                        <div class="price-item">
+                            <span class="amount">50.000</span>
+                            <span class="currency">VNĐ</span>
+                            <span class="period" data-i18n="price_period">/30 ngày</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="price-item">
+                            <span class="amount">3</span>
+                            <span class="currency">USD</span>
+                            <span class="period" data-i18n="price_period_en">/30 days</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-options">
+                        <div class="qr-container">
+                            <p class="hint-text"><b data-i18n="pay_vn_title">VN:</b> <span data-i18n="pay_vn_desc">Quét
+                                    mã VietQR:</span></p>
+                            <img src="icons/qr_payment.png" alt="VietQR Payment" class="qr-image">
+                            <p class="qr-info"><span data-i18n="qr_content_label">Nội dung:</span> <b>SKPRO <span
+                                        id="display-user-id">...</span></b></p>
+                        </div>
+
+                        <div class="paypal-container">
+                            <p class="hint-text"><b data-i18n="pay_global_title">Global:</b> <span
+                                    data-i18n="pay_global_desc">Pay via PayPal ($3):</span></p>
+                            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=at06012005@gmail.com&amount=3&currency_code=USD&item_name=Coursera%20SP%20PRO"
+                                target="_blank" class="paypal-btn">
+                                <span class="paypal-icon">🅿️</span> <span data-i18n="pay_paypal_btn">Pay with
+                                    PayPal</span>
+                            </a>
+                            <p class="qr-info"><span data-i18n="paypal_note">Note:</span> **SKPRO <span
+                                    class="user-id-text">...</span>**</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-box">
+                        <p class="hint-text" data-i18n="contact_hint">Sau khi thanh toán, chụp ảnh màn hình và gửi mã
+                            User-ID cho Admin qua Telegram hoặc Zalo để nhận Key:</p>
+                        <a href="https://t.me/+84837474615" target="_blank" class="contact-link"><span
+                                data-i18n="contact_tg">✈️ Nhắn tin cho Admin qua Telegram</span></a>
+                        <a href="https://zalo.me/84837474615" target="_blank" class="contact-link"
+                            style="margin-left: 10px;"><span data-i18n="contact_zalo">📱 Liên hệ Zalo:
+                                0837.474.615</span></a>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="input-group">
+                        <label for="license-key" data-i18n="license_key_label">Nhập mã kích hoạt (License Key)</label>
+                        <input type="text" id="license-key" placeholder="Nhập mã bạn nhận được sau khi CK">
+                    </div>
+                    <button id="activate-btn" class="premium-btn" data-i18n="activate_btn">Kích hoạt ngay</button>
+
+                    <div id="license-status" class="hint-text mt-10" data-i18n="license_status_inactive">Bạn chưa kích
+                        hoạt bản PRO.</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Coursera SP AI Engine</p>
+        </footer>
+    </div>
+    <script src="keys.js"></script>
+    <script src="sidepanel.js"></script>
+</body>
+
+</html>
