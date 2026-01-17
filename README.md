@@ -1,7 +1,7 @@
 # 🚀 Coursera SP - The #1 Coursera Automation Tool
 
 Coursera SP is a powerful Chrome Extension designed to help you study and complete Coursera courses in the smartest, most automated, and efficient way possible.
-
+INTRODUCTION VIDEO : https://youtu.be/mZH93D9BaoQ
 ---
 
 ## ✨ Main Features (PRO Version)
