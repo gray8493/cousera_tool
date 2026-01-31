@@ -78,6 +78,14 @@
                         <input type="password" id="gemini-key" placeholder="Enter your Gemini API key">
                     </div>
                     <div class="input-group">
+                        <label for="gemini-model">Gemini Model</label>
+                        <select id="gemini-model" class="model-select">
+                            <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Exp</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash 8B</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label for="cauth-token" data-i18n="cauth_label">CAUTH Token</label>
                         <input type="password" id="cauth-token" placeholder="Optional: manual entry">
                     </div>

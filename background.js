@@ -91,7 +91,6 @@ async function fetchCourseraGraphQL(op, query, vars = {}) {
     try {
         let res = await fetch(`${GRAPHQL_GATEWAY}?opname=${op}`, { method: 'POST', headers, body });
         if (res.status === 401 || res.status === 403) {
-            // Try fallback without gateway if blocked
             res = await fetch(`${BASE_URL}opencourse.v1/graphql?opname=${op}`, { method: 'POST', headers, body });
         }
         return await res.json();
@@ -100,11 +99,8 @@ async function fetchCourseraGraphQL(op, query, vars = {}) {
 
 async function getUserId() {
     try {
-        // [v10.0] Modern Auth: Try UserV1 first
         let res = await fetchCourseraGraphQL('UserV1', 'query UserV1 { UserV1 { me { id } } }');
         if (res.data?.UserV1?.me?.id) { state.userId = res.data.UserV1.me.id; return true; }
-
-        // Fallback to legacy
         res = await fetchCourseraGraphQL('AdminUserPermissionsV1', 'query AdminUserPermissionsV1 { AdminUserPermissionsV1 { me { id } } }');
         if (res.data?.AdminUserPermissionsV1?.me?.id) { state.userId = res.data.AdminUserPermissionsV1.me.id; return true; }
     } catch (e) { }
@@ -125,7 +121,6 @@ async function startAutomation() {
 
     try {
         if (await getUserId()) {
-            // 🛡️ PRO LICENSE CHECK (ENFORCEMENT)
             if (state.isPro) {
                 const now = Date.now();
                 if (now > state.expiryDate) {
@@ -133,14 +128,13 @@ async function startAutomation() {
                     state.isPro = false;
                 } else if (state.boundUserId && state.userId !== state.boundUserId) {
                     logToPanel(`❌ License Bound to ID: ${state.boundUserId}. Current ID: ${state.userId}.`);
-                    logToPanel('Mỗi Key chỉ dùng cho 1 tài khoản Coursera duy nhất.');
                     state.isPro = false;
                 } else {
                     const daysLeft = Math.ceil((state.expiryDate - now) / (1000 * 60 * 60 * 24));
                     logToPanel(`✅ PRO Active: ${daysLeft} days remaining.`);
                 }
             } else {
-                logToPanel('ℹ️ Running Free Version (Quiz solving might be limited).');
+                logToPanel('ℹ️ Running Free Version (Pro features locked).');
             }
 
             await getCourseMaterials();
@@ -153,19 +147,15 @@ async function startAutomation() {
 async function getCourseMaterials() {
     let slug = state.config.slug || '';
     if (slug.includes('/')) slug = slug.split('/').filter(Boolean).pop();
-
     const url = `${BASE_URL}onDemandCourseMaterials.v2/?q=slug&slug=${slug}&includes=modules,lessons,passableLessonElements,items&fields=moduleIds,onDemandCourseMaterialModules.v1(name,lessonIds),onDemandCourseMaterialLessons.v1(name,elementIds),onDemandCourseMaterialItems.v2(name,contentSummary,timeCommitment,isLocked)&showLockedItems=true`;
     const res = await fetch(url, { headers: { 'Cookie': `CAUTH=${state.config.cauthToken}` } }).then(r => r.json());
-
     if (!res.elements?.length) throw new Error("Course not found.");
     state.courseId = res.elements[0].id;
-
     const linked = res.linked || {};
     const itemsMap = {};
     Object.keys(linked).forEach(k => { if (k.includes('Items')) linked[k].forEach(i => itemsMap[i.id] = i); });
     const modulesMap = Object.fromEntries((linked['onDemandCourseMaterialModules.v1'] || []).map(m => [m.id, m]));
     const lessonsMap = Object.fromEntries((linked['onDemandCourseMaterialLessons.v1'] || []).map(l => [l.id, l]));
-
     for (const mid of res.elements[0].moduleIds || []) {
         const mod = modulesMap[mid]; if (!mod) continue;
         logToPanel(`📦 ${mod.name}`);
@@ -184,9 +174,7 @@ async function getCourseMaterials() {
 async function processItem(item, slug) {
     const type = item.contentSummary?.typeName || 'unknown';
     const isQuiz = ["gradedQuiz", "practiceQuiz", "exam", "staffGraded", "ungradedAssignment", "practiceAssignment"].includes(type) || type.toLowerCase().includes('quiz');
-
     if (item.isLocked && !isQuiz) return;
-
     if (type === 'lecture' && state.config.skipVideo) {
         if (!state.isPro) return logToPanel(`      🔒 Skip Video (PRO only)`);
         await markCompleted(item.id);
@@ -202,17 +190,14 @@ async function solveQuiz(itemId, name) {
         const query = ALL_FRAGMENTS + " query QueryState($courseId: ID!, $itemId: ID!) { SubmissionState { queryState(courseId: $courseId, itemId: $itemId) { ... on Submission_SubmissionState { allowedAction integritySettings { attemptId } attempts { inProgressAttempt { id draft { id instructions { ...Instr } parts { __typename id partId:id ... on Submission_MultipleChoiceQuestion { questionSchema { prompt { ...RT } options { ...Opt } } } ... on Submission_CheckboxQuestion { questionSchema { prompt { ...RT } options { ...Opt } } } ... on Submission_FileUploadQuestion { questionSchema { prompt { ...RT } } } ... on Submission_TextBlock { body { ...RT } } } } } } } } } }";
         let res = await fetchCourseraGraphQL('QueryState', query, { courseId: state.courseId, itemId: itemId });
         let qState = res?.data?.SubmissionState?.queryState;
-
         if (qState?.allowedAction?.includes('START')) {
             await fetchCourseraGraphQL('Start', "mutation S($courseId: ID!, $itemId: ID!) { Submission_StartAttempt(input: {courseId: $courseId, itemId: $itemId}) { ... on Submission_StartAttemptSuccess { __typename } } }", { courseId: state.courseId, itemId: itemId });
             res = await fetchCourseraGraphQL('QueryState', query, { courseId: state.courseId, itemId: itemId });
             qState = res?.data?.SubmissionState?.queryState;
         }
-
         const draft = qState?.attempts?.inProgressAttempt?.draft || qState?.attempts?.inProgressAttempt;
         const attemptId = qState?.integritySettings?.attemptId || draft?.id;
         if (!draft || !attemptId) return;
-
         logToPanel(`      🧠 Solving: ${name}`);
         let context = "";
         if (draft.instructions?.overview) context += `OVERVIEW: ${cleanCML(draft.instructions.overview.cmlValue)}\n`;
@@ -221,19 +206,15 @@ async function solveQuiz(itemId, name) {
             if (p.__typename === 'Submission_TextBlock') context += `CONTEXT: ${cleanCML(p.body?.cmlValue)}\n`;
             else if (QUESTION_MAP[p.__typename]) toSolve.push(p);
         });
-
-        // Simple Gemini Call
         let prompt = `Solve Coursera Quiz. JSON ONLY: [{"questionId": "...", "choiceId": "...", "text": "..."}]\nCONTEXT: ${context.substring(0, 3000)}\nQUESTIONS:\n`;
         toSolve.forEach((q, i) => {
             prompt += `${i + 1}. [${q.id}] ${cleanCML(q.questionSchema?.prompt?.cmlValue)}\n`;
             if (q.questionSchema?.options) q.questionSchema.options.forEach(o => prompt += `   - ID: ${o.id} | ${cleanCML(o.display?.cmlValue)}\n`);
         });
-
         const model = state.config.geminiModel || 'gemini-2.0-flash-exp';
         const gemRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${state.config.geminiKey}`, { method: 'POST', body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
         const gemJson = await gemRes.json();
         const aiJson = JSON.parse(gemJson.candidates[0].content.parts[0].text.match(/\[.*\]/s)[0]);
-
         const responses = aiJson.map(ans => {
             const q = toSolve.find(x => x.id === ans.questionId);
             if (!q) return null;
@@ -244,12 +225,9 @@ async function solveQuiz(itemId, name) {
                 const raw = Array.isArray(ans.choiceId) ? ans.choiceId : [ans.choiceId || ans.text];
                 const clean = raw.map(r => enforceOptionId(r, opts));
                 val = { chosen: type === 'CHECKBOX' ? clean : clean[0] };
-            } else {
-                val = { plainText: String(ans.text || ans.choiceId || "Done") };
-            }
+            } else { val = { plainText: String(ans.text || ans.choiceId || "Done") }; }
             return { questionId: q.id, questionType: type, questionResponse: { [key]: val } };
         }).filter(Boolean);
-
         await fetchCourseraGraphQL('Save', "mutation Save($input: Submission_SaveResponsesInput!) { Submission_SaveResponses(input: $input) { ... on Submission_SaveResponsesSuccess { __typename } } }", {
             input: { courseId: state.courseId, itemId: itemId, attemptId: attemptId, questionResponses: responses }
         });
